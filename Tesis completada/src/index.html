@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Asistente IA — Interfaz</title>
+  <style>
+    :root{
+      --bg:#071029;
+      --card:#071a2b;
+      --accent:#6ee7b7;
+      --accent-2:#60a5fa;
+      --muted:#94a3b8;
+      --glass-border: rgba(255,255,255,0.04);
+      --radius:12px;
+      --shadow: 0 6px 18px rgba(2,6,23,0.6);
+      --max-width:1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+      background: linear-gradient(180deg,#071029 0%, #071a2b 60%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .container{
+      max-width:var(--max-width);
+      margin:28px auto;
+      padding:20px;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:20px;
+      align-items:start;
+    }
+    header{
+      grid-column:1 / -1;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:6px;
+    }
+    .logo {
+      width:56px;
+      height:56px;
+      border-radius:12px;
+      background: linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:#04263b;
+      box-shadow: 0 6px 20px rgba(6,12,30,0.6);
+      flex-shrink:0;
+    }
+    h1{ font-size:20px; margin:0; letter-spacing:0.2px; }
+    p.lead{ margin:0; color:var(--muted); font-size:13px; }
+    .chat-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: var(--radius);
+      padding:14px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--glass-border);
+      min-height:640px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .chat-window{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border-radius:10px;
+      padding:12px;
+      height:520px;
+      overflow:auto;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .message{ display:flex; gap:10px; margin-bottom:12px; align-items:flex-start; }
+    .avatar{ width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#04263b; background:linear-gradient(135deg,#fff 0%, #fff 100%); flex-shrink:0; }
+    .msg-bubble{ max-width:78%; padding:10px 12px; border-radius:10px; line-height:1.4; font-size:14px; box-shadow: 0 4px 10px rgba(2,6,23,0.45); }
+    .user .avatar{ background: linear-gradient(135deg,#fff,#fff); color:#04263b; }
+    .user .msg-bubble{ background: linear-gradient(180deg,#062a4a,#083a63); color:#dbeafe; border:1px solid rgba(255,255,255,0.03); border-top-left-radius:4px; }
+    .bot .avatar{ background: linear-gradient(135deg,var(--accent),var(--accent-2)); color:#04263b; }
+    .bot .msg-bubble{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); color:#e6eef8; border:1px solid rgba(255,255,255,0.03); }
+    .meta { font-size:12px; color:var(--muted); margin-top:6px; }
+    .composer{ display:flex; gap:10px; align-items:center; }
+    .composer input[type="text"]{ flex:1; padding:12px 14px; border-radius:10px; border:1px solid var(--glass-border); background:transparent; color:inherit; outline:none; font-size:14px; }
+    .btn{ padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:600; color:#04263b; background:linear-gradient(90deg,var(--accent),var(--accent-2)); box-shadow: 0 6px 18px rgba(6,12,30,0.5); }
+    .btn.ghost{ background:transparent; color:var(--accent); border:1px solid rgba(255,255,255,0.04); box-shadow:none; }
+    .btn.small{ padding:8px 10px; font-size:13px; border-radius:8px; }
+    .side-panel{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: var(--radius); padding:14px; box-shadow: var(--shadow); border:1px solid var(--glass-border); display:flex; flex-direction:column; gap:12px; min-height:640px; }
+    .panel-section{ background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); }
+    .panel-title{ font-size:13px; margin:0 0 8px 0; color:#dbeafe; }
+    textarea#tempdoc{ width:100%; min-height:140px; resize:vertical; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); background:transparent; color:inherit; font-size:14px; }
+    .file-drop{ border:2px dashed rgba(255,255,255,0.03); border-radius:10px; padding:12px; text-align:center; color:var(--muted); cursor:pointer; transition: all .15s ease; background: linear-gradient(180deg, rgba(255,255,255,0.005), transparent); }
+    .file-drop.dragover{ border-color: rgba(96,165,250,0.9); color:var(--accent-2); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(32,64,128,0.12); }
+    .small-muted{ font-size:12px; color:var(--muted); margin-top:6px; }
+    .controls{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    .history-list{ max-height:160px; overflow:auto; display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+    .history-item{ padding:8px; border-radius:8px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); font-size:13px; color:var(--muted); cursor:pointer; }
+    footer{ grid-column:1 / -1; text-align:center; color:var(--muted); font-size:13px; margin-top:8px; }
+    @media (max-width:980px){ .container{ grid-template-columns: 1fr; padding:12px } .side-panel{ order:2 } .chat-card{ order:1 } .chat-window{ height:420px } }
+    .controls button[disabled]{ opacity:0.45; cursor:not-allowed; filter: grayscale(0.2); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">IA</div>
+      <div>
+        <h1>Asistente IA</h1>
+        <p class="lead">Consulta tu base documental y añade archivos temporales — interfaz moderna y clara.</p>
+      </div>
+    </header>
+
+    <section class="chat-card" aria-label="Chat principal">
+      <div class="chat-window" id="chatbox" role="log" aria-live="polite"></div>
+
+      <div class="composer" style="margin-top:6px;">
+        <input id="input" type="text" placeholder="Escribe tu consulta... (ej. 'Háblame de la ingeniería de software')" />
+        <button id="send" class="btn">Enviar</button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; gap:10px; margin-top:8px;">
+        <div class="small-muted">k:
+          <select id="kSelect" style="background:transparent; color:inherit; border:none; outline:none;">
+            <option value="1">1</option>
+            <option value="3" selected>3</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side-panel" aria-label="Panel lateral">
+      <div class="panel-section">
+        <div class="panel-title">Añadir documento (texto)</div>
+        <textarea id="tempdoc" placeholder="Pega aquí tu documento temporal o notas..."></textarea>
+        <div class="controls">
+          <button id="addtemp" class="btn small">Añadir texto</button>
+          <button id="clearText" class="btn ghost small">Limpiar</button>
+        </div>
+        <div class="small-muted">El texto se inserta como fragmentos temporales y se usa en la siguiente consulta.</div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">Añadir documento (archivo)</div>
+        <div id="fileDrop" class="file-drop" tabindex="0">
+          <div style="font-weight:600; color:var(--accent); margin-bottom:6px;">Arrastra o haz clic para seleccionar</div>
+          <div class="small-muted">Soportado: .pdf, .docx, .txt</div>
+          <input id="fileupload" type="file" accept=".pdf,.docx,.txt" style="display:none;" />
+        </div>
+        <div class="controls">
+          <button id="uploadfile" class="btn small">Subir archivo</button>
+          <button id="clearFiles" class="btn ghost small">Cancelar</button>
+        </div>
+        <div id="fileInfo" class="small-muted" style="margin-top:8px;">Ningún archivo seleccionado</div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">Historial reciente</div>
+        <div class="history-list" id="historyList"></div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button id="refreshHistory" class="btn small ghost">Actualizar</button>
+        </div>
+      </div>
+    </aside>
+
+    <footer>Diseño moderno • Interfaz responsiva • Conexión a tu API local</footer>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+    const chatbox = document.getElementById("chatbox");
+    const inputEl = document.getElementById("input");
+    const kSelect = document.getElementById("kSelect");
+    let lastFeedbackControls = null;
+
+    function appendMessage(role, text, meta = "") {
+      const wrapper = document.createElement("div");
+      wrapper.className = "message " + (role === "user" ? "user" : "bot");
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = role === "user" ? "T" : "IA";
+      const bubble = document.createElement("div");
+      bubble.className = "msg-bubble";
+      bubble.innerHTML = text.replace(/\n/g, "<br/>");
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(bubble);
+      if (meta) {
+        const m = document.createElement("div");
+        m.className = "meta";
+        m.textContent = meta;
+        wrapper.appendChild(m);
+      }
+      chatbox.appendChild(wrapper);
+      chatbox.scrollTop = chatbox.scrollHeight;
+      return wrapper;
+    }
+
+    function disablePreviousFeedback() {
+      if (lastFeedbackControls) {
+        const buttons = lastFeedbackControls.querySelectorAll("button");
+        buttons.forEach(b => b.disabled = true);
+        lastFeedbackControls = null;
+      }
+    }
+
+    async function sendMessage() {
+      const query = inputEl.value.trim();
+      if (!query) return;
+      disablePreviousFeedback();
+      appendMessage("user", query);
+      inputEl.value = "";
+      const k = parseInt(kSelect.value || "3", 10);
+      const processing = appendMessage("bot", "Generando respuesta…", "Procesando con el modelo");
+      try {
+        const res = await fetch(`${API_BASE}/ask`, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ query, k })
+        });
+        const data = await res.json().catch(()=>({}));
+        processing.remove();
+        if (!res.ok) {
+          appendMessage("bot", `Error: ${data.detail || "Respuesta no disponible"}`);
+          return;
+        }
+        const answer = data.answer || "No hay respuesta.";
+        appendMessage("bot", answer);
+        const auditForThis = data.audit && data.audit.id_aud ? data.audit.id_aud : null;
+        const fbHtml = document.createElement("div");
+        fbHtml.className = "controls";
+        const useful = document.createElement("button");
+        useful.className = "btn small";
+        useful.textContent = "👍 Útil";
+        useful.onclick = () => sendFeedback(auditForThis, "useful");
+        const notUseful = document.createElement("button");
+        notUseful.className = "btn ghost small";
+        notUseful.textContent = "👎 No útil";
+        notUseful.onclick = () => sendFeedback(auditForThis, "not useful");
+        fbHtml.appendChild(useful);
+        fbHtml.appendChild(notUseful);
+        chatbox.appendChild(fbHtml);
+        chatbox.scrollTop = chatbox.scrollHeight;
+        lastFeedbackControls = fbHtml;
+      } catch (err) {
+        if (processing) processing.remove();
+        appendMessage("bot", "Error de conexión con el servidor. Revisa la consola.");
+        console.error(err);
+      }
+    }
+
+    async function sendFeedback(queryId, feedback) {
+      try {
+        const payload = { query_id: queryId === null ? 0 : queryId, feedback };
+        const res = await fetch(`${API_BASE}/feedback`, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          appendMessage("bot", `[Feedback enviado: ${feedback}]`);
+          if (lastFeedbackControls) {
+            lastFeedbackControls.querySelectorAll("button").forEach(b => b.disabled = true);
+            lastFeedbackControls = null;
+          }
+        } else {
+          appendMessage("bot", "[Error al enviar feedback]");
+        }
+      } catch (err) {
+        appendMessage("bot", "[No se pudo enviar feedback]");
+        console.error(err);
+      }
+    }
+
+    async function loadHistory(limit = 5) {
+      try {
+        const res = await fetch(`${API_BASE}/history?limit=${limit}`);
+        const data = await res.json();
+        const list = document.getElementById("historyList");
+        list.innerHTML = "";
+        (data.history || []).forEach(item => {
+          const el = document.createElement("div");
+          el.className = "history-item";
+          el.innerHTML = `<strong>Q:</strong> ${escapeHtml(item.query)}<br/><strong>A:</strong> ${escapeHtml(item.response)}`;
+          el.onclick = () => { inputEl.value = item.query; inputEl.focus(); };
+          list.appendChild(el);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.getElementById("addtemp").addEventListener("click", async () => {
+      const text = document.getElementById("tempdoc").value.trim();
+      if (!text) return;
+      try {
+        const res = await fetch(`${API_BASE}/add_temp`, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ text })
+        });
+        if (res.ok) {
+          appendMessage("bot", "[Documento temporal insertado]");
+          document.getElementById("tempdoc").value = "";
+        } else {
+          appendMessage("bot", "[Error insertando documento temporal]");
+        }
+      } catch (err) {
+        appendMessage("bot", "[Error de conexión al insertar documento]");
+        console.error(err);
+      }
+    });
+
+    document.getElementById("clearText").addEventListener("click", () => { document.getElementById("tempdoc").value = ""; });
+
+    const fileDrop = document.getElementById("fileDrop");
+    const fileInput = document.getElementById("fileupload");
+    const fileInfo = document.getElementById("fileInfo");
+    fileDrop.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", () => {
+      const f = fileInput.files[0];
+      fileInfo.textContent = f ? `${f.name} • ${Math.round(f.size/1024)} KB` : "Ningún archivo seleccionado";
+    });
+    fileDrop.addEventListener("dragover", (e) => { e.preventDefault(); fileDrop.classList.add("dragover"); });
+    fileDrop.addEventListener("dragleave", () => fileDrop.classList.remove("dragover"));
+    fileDrop.addEventListener("drop", (e) => {
+      e.preventDefault();
+      fileDrop.classList.remove("dragover");
+      const f = e.dataTransfer.files[0];
+      if (f) {
+        fileInput.files = e.dataTransfer.files;
+        fileInfo.textContent = `${f.name} • ${Math.round(f.size/1024)} KB`;
+      }
+    });
+
+    document.getElementById("uploadfile").addEventListener("click", async () => {
+      if (!fileInput.files.length) {
+        appendMessage("bot", "[Selecciona un archivo primero]");
+        return;
+      }
+      const f = fileInput.files[0];
+      const form = new FormData();
+      form.append("file", f);
+      appendMessage("bot", `[Subiendo ${f.name}...]`);
+      try {
+        const res = await fetch(`${API_BASE}/add_temp_file`, { method: "POST", body: form });
+        if (res.ok) {
+          appendMessage("bot", `[Archivo ${f.name} insertado como temporal]`);
+          fileInput.value = "";
+          fileInfo.textContent = "Ningún archivo seleccionado";
+        } else {
+          const data = await res.json().catch(()=>({}));
+          appendMessage("bot", `[Error subiendo archivo: ${data.detail || "Servidor"}]`);
+        }
+      } catch (err) {
+        appendMessage("bot", "[Error de conexión al subir archivo]");
+        console.error(err);
+      }
+    });
+
+    document.getElementById("clearFiles").addEventListener("click", () => { fileInput.value = ""; fileInfo.textContent = "Ningún archivo seleccionado"; });
+
+    document.getElementById("refreshHistory").addEventListener("click", () => loadHistory(6));
+
+    document.getElementById("send").addEventListener("click", sendMessage);
+    inputEl.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
+    window.addEventListener("beforeunload", () => {
+      try { navigator.sendBeacon(`${API_BASE}/reload_cleanup`); } catch(e){}
+    });
+
+    function escapeHtml(unsafe) {
+      return (unsafe || "").replace(/[&<"'>]/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]); });
+    }
+
+    loadHistory(6);
+    appendMessage("bot", "Hola — pregunta lo que necesites o añade documentos temporales para enriquecer las respuestas.", "Consejo: prueba 'Háblame de la ingeniería de software'");
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+VE/
+__pycache__/
+*.pyc
+*.log
+Tesis completada\storage\Dataset para entrenar embedding\Texto entrenamiento.txt
+Tesis completada\storage\Modelos Generados\modelo_skipgram_definitivo.keras
