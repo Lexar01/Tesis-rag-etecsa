@@ -45,11 +45,11 @@ Desde el visual code:
 
 1- Abrir 2 consolas
 
-2- En ambas escribir: cd NombreDisco:\...\Tesis completada\src, basicamente direccionar a donde se encuentran los scripts
+2- En ambas escribir: "cd NombreDisco:\...\Tesis completada\src", basicamente direccionar a donde se encuentran los scripts
 
-3- Luego en 1 de las 2 escribir: uvicorn app:app --reload y python -m http.server 5500 en la otra
+3- Luego en 1 de las 2 escribir: "uvicorn app:app --reload" y "python -m http.server 5500" en la otra
 
-4- Abrir en navegador http://127.0.0.1:5500/index.html
+4- Abrir en navegador "http://127.0.0.1:5500/index.html"
 
 
 OPCIONES:
@@ -69,3 +69,4 @@ NOTA: El proyecto para almacenar informacion si acepta doc y txt ademas de pdf, 
 
 ejemplo: Un archivo con todas las dimensiones del embedding en 0 no tiene ninguna utilidad.
 
+NOTA: Las comillas es para distinguir los puntos claves del texto normal para mas comodidad.
